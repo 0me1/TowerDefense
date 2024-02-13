@@ -1,5 +1,2 @@
-enem = {
-    
-    1: enemy
-    2: enemy
-}
+road = [1,2,3,4,5]
+

@@ -4,6 +4,7 @@ import time
 turn = 0
 enemy_base_cord = (5,16)
 player_base_cord = (17, 14)
+enemy_ingame = []
 
 class Enemy:
     def __init__(self, hp, cord=None):
@@ -93,12 +94,27 @@ def spawn_enemy(enemy_base_cord, map_dict, enemy_dict):
         pass
     elif cord not in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']:
         enemy = enemy_dict.pop(0)
+        enemy_ingame.append(enemy)
         enemy = enemy.hp
         enemy_dict = normalize(enemy_dict)
         line[enemy_base_cord[0]] = str(enemy)
     return map_dict
 
 
+def delete(map:dict, x, y, del_sym:str):
+    line = map[y]
+    cord = line[x]
+    cord = del_sym
+    return map
+
+
+def next_turn(map:dict, enemy_ingame:list, road_pattern:list):
+    for enemy in enemy_ingame:
+        old_cord = enemy.cord
+        index = road_pattern.index(old_cord)
+        new_cord = road_pattern[index+1]
+
+    pass
 
 map_dict = generate_map(pattern=1)
 map_dict = spawn_enemy(enemy_base_cord, map_dict, create_enemy(7))

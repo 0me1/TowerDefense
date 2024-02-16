@@ -4,7 +4,7 @@ import time
 turn = 0
 enemy_base_cord = (5,16)
 player_base_cord = (17, 14)
-enemy_ingame = []
+enemy_ingame = [1]
 
 class Enemy:
     def __init__(self, hp, cord=None):
@@ -71,6 +71,7 @@ def generate_map(x_size=32, y_size=16, pattern=None, road='[ ]', enemy_base='(*)
     return map_dict
 
 def create_enemy(count_enemy):
+    """Создает словарь врагов"""
     enemy_count = count_enemy
     enemy_dict = {}
     for i in range(enemy_count):
@@ -79,6 +80,7 @@ def create_enemy(count_enemy):
     return enemy_dict
 
 def normalize(dict):
+    """Смешает все значения влево"""
     for i in range(len(dict)):
         if i+2 == len(dict):
                 del dict[i+1]
@@ -87,9 +89,10 @@ def normalize(dict):
     return dict
 
 def spawn_enemy(enemy_base_cord, map_dict, enemy_dict):
+    """Рисует врагов на карте"""
     line = map_dict[enemy_base_cord[1]]
     cord = line[enemy_base_cord[0]]
-    if cord in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']:
+    if cord in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']: # Проверка не стоит ли на базе уже враг
         print("ENEMY ALREADY HERE")
         pass
     elif cord not in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']:
@@ -101,35 +104,46 @@ def spawn_enemy(enemy_base_cord, map_dict, enemy_dict):
     return map_dict
 
 
-def delete(map:dict, x, y, del_sym:str):
+def map_del(map:dict, x, y, symbol:str):
     line = map[y]
-    cord = line[x]
-    cord = del_sym
+    line[x] = symbol
     return map
 
 
 def next_turn(map:dict, enemy_ingame:list, road_pattern:list):
     for enemy in enemy_ingame:
         old_cord = enemy.cord
-        index = road_pattern.index(old_cord)
-        new_cord = road_pattern[index+1]
-
-    pass
+        if old_cord == enemy_base_cord: #Если враг только реснулся то он на кордах базы и ее нету в списке дороги
+            map_del(map, old_cord[0], old_cord[1], '*')
+            new_cord = road_pattern[0]
+        else:
+            map_del(map, old_cord[0], old_cord[1], ' ')
+            index = road_pattern.index(old_cord)
+            new_cord = road_pattern[index+1]
+        
+        line = map[new_cord[1]]
+        line[new_cord[0]] = str(enemy.hp)
+         
+        
+    return map_dict
 
 map_dict = generate_map(pattern=1)
 map_dict = spawn_enemy(enemy_base_cord, map_dict, create_enemy(7))
 map_dict = spawn_enemy(enemy_base_cord, map_dict, create_enemy(7))
+
 lines = []
 for k,v in map_dict.items():
     line = "".join(v)
     lines.append(line)
 
 # print("\n".join(lines))
-
+list.reverse()
 while True:
     print("\n".join(lines))
     print(f"Ход:", turn, end='')
     print(f'\t\tВолна 1')
+    print(enemy_ingame[0])
+    print(map_dict)
     if input() == '0':
         break
     os.system('cls||clear')
